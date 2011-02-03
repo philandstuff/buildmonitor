@@ -15,42 +15,64 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * @understands Checking if a given stage broke.
- */
 public class BuildStatusMonitor {
-    private String pipelineName;
-    private String stageName;
+    private final String pipelineName;
+    private final String stageName;
+    private final String GO_SERVER;
+
     Set<String> visitedStages = new HashSet<String>();
+
+    List<BuildMonitorListener> listeners = new ArrayList<BuildMonitorListener>();
+
     private BlameMonitor blameMonitor = new BlameMonitor();
-    private final String GO_SERVER = "twu-ci";
+    private SongListener songListener = new SongListener();
+
     private boolean borked = false;
 
-    public BuildStatusMonitor(String pipelineName, String stageName) {
+    public BuildStatusMonitor(String pipelineName, String stageName, String goServer) {
         this.pipelineName = pipelineName;
         this.stageName = stageName;
+        this.GO_SERVER = goServer;
+
+        BlameMonitor blameMonitor = new BlameMonitor();
+        blameMonitor.createWindow();
+        listeners.add(blameMonitor);
+        listeners.add(new SongListener());
+
         blameMonitor.createWindow();
     }
 
-    public boolean pollForNewCompletion() {
+    public void pollForNewCompletion() {
         Stage stage = latestStage();
-        if (stage != null && !visitedStages.contains(stage.getStageLocator())) {
+        if (stage != null && !alreadySeen(stage)) {
             System.out.println("Found new stage with result " + stage.getResult());
-            visitedStages.add(stage.getStageLocator());
-
-            if (!isBroken(stage) && !wasFixed(stage)) {
-                return false;
-            }
-
-            List<String> users = checkinUsersForThisStage(stage);
-
-            blameMonitor.blame(stage.getResult(), checkinUsersForThisStage(stage).get(0));
-            SongPlayer.playSong(new NameToSongMapping(stage.getResult()).songForUser(users));
-
-            borked = isBroken(stage);
-            return true;
+            reportNewStage(stage);
         }
-        return false;
+    }
+
+    void reportNewStage(Stage stage) {
+        visitedStages.add(stage.getStageLocator());
+
+        List<String> users = checkinUsersForThisStage(stage);
+        String user = users.get(0);
+
+        for (BuildMonitorListener listener : listeners) {
+            if (isBroken(stage)) {
+                listener.brokeTheBuild(user);
+            }
+            else if (wasFixed(stage)) {
+                listener.fixedTheBuild(user);
+            }
+            else {
+                listener.pushedWorkingBuild(user);
+            }
+        }
+
+        borked = isBroken(stage);
+    }
+
+    private boolean alreadySeen(Stage stage) {
+        return visitedStages.contains(stage.getStageLocator());
     }
 
     private boolean wasFixed(Stage stage) {
@@ -110,7 +132,7 @@ public class BuildStatusMonitor {
 
     public static void main(String[] args) throws InterruptedException {
         Thread.sleep(100);
-        BuildStatusMonitor monitor = new BuildStatusMonitor("all", "build");
+        BuildStatusMonitor monitor = new BuildStatusMonitor("all", "build", "twu-ci");
         while (true) {
             try {
                 monitor.pollForNewCompletion();

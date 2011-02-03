@@ -5,9 +5,13 @@ import javazoom.jl.player.advanced.AdvancedPlayer;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 
-public class SongPlayer {
+public class SongListener implements BuildMonitorListener {
 
-    public static void playSong(String songPath) {
+    private static final String BROKEN_SONG = "failed.mp3";
+    private static final String FIXED_SONG = "fixed.mp3";
+    private static final String PASSED_SONG = "passed.mp3";
+
+    public void playSong(String songPath) {
         try {
             System.out.println("Playing song " + songPath);
             FileInputStream soundFile = new FileInputStream(songPath);
@@ -17,5 +21,17 @@ public class SongPlayer {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void brokeTheBuild(String user) {
+        playSong(BROKEN_SONG);
+    }
+
+    public void fixedTheBuild(String user) {
+        playSong(FIXED_SONG);
+    }
+
+    public void pushedWorkingBuild(String user) {
+        playSong(PASSED_SONG);
     }
 }

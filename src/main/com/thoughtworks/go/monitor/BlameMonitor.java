@@ -10,7 +10,7 @@ import java.awt.*;
  * Time: 20:06
  * To change this template use File | Settings | File Templates.
  */
-public class BlameMonitor {
+public class BlameMonitor implements BuildMonitorListener {
     private JFrame frame;
     private JLabel label;
 
@@ -29,13 +29,19 @@ public class BlameMonitor {
 
     }
 
-    public void blame(String result, String user) {
-        setWindowTo(result.equals("Failed") ? Color.RED : Color.GREEN);
+    public void brokeTheBuild(String user) {
+        frame.setBackground(Color.RED);
         showUser(user);
     }
 
-    private void setWindowTo(Color color) {
-        frame.setBackground(color);
+    public void fixedTheBuild(String user) {
+        frame.setBackground(Color.GREEN);
+        showUser(user);
+    }
+
+    public void pushedWorkingBuild(String user) {
+        frame.setBackground(Color.GREEN);
+        showUser(user);
     }
 
     private void showUser(String user) {
