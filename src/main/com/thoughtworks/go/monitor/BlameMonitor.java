@@ -24,23 +24,26 @@ public class BlameMonitor implements BuildMonitorListener {
         frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH);
 
         label.setFont(new Font("Dialog",Font.PLAIN, 100));
-
+        label.setOpaque(false);
         frame.setVisible(true);
 
     }
 
     public void brokeTheBuild(String user) {
-        frame.setBackground(Color.RED);
+        Container container = frame.getContentPane();
+        container.setBackground(Color.RED);
         showUser(user);
     }
 
     public void fixedTheBuild(String user) {
-        frame.setBackground(Color.GREEN);
+        Container container = frame.getContentPane();
+        container.setBackground(Color.GREEN);
         showUser(user);
     }
 
     public void pushedWorkingBuild(String user) {
-        frame.setBackground(Color.GREEN);
+        Container container = frame.getContentPane();
+        container.setBackground(Color.GREEN);
         showUser(user);
     }
 
