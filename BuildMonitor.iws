@@ -59,10 +59,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="BuildStatusMonitor.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="BuildStatusMonitor.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/com/thoughtworks/go/monitor/BuildStatusMonitor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="53" column="24" selection-start="1750" selection-end="1750" vertical-scroll-proportion="0.0">
+            <state line="53" column="24" selection-start="1750" selection-end="1750" vertical-scroll-proportion="1.6736842">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -70,10 +70,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BuildStatusMonitorTest.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="BuildStatusMonitorTest.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/com/thoughtworks/go/monitor/BuildStatusMonitorTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="1" selection-start="274" selection-end="274" vertical-scroll-proportion="0.25263157">
+            <state line="6" column="23" selection-start="242" selection-end="242" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -626,19 +626,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/com/thoughtworks/go/monitor/BuildStatusMonitor.java">
+    <entry file="file://$PROJECT_DIR$/src/test/com/thoughtworks/go/monitor/BuildStatusMonitorTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="24" selection-start="1750" selection-end="1750" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state line="6" column="23" selection-start="242" selection-end="242" vertical-scroll-proportion="0.0">
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/com/thoughtworks/go/monitor/BuildStatusMonitorTest.java">
+    <entry file="file://$PROJECT_DIR$/src/main/com/thoughtworks/go/monitor/BuildStatusMonitor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="1" selection-start="274" selection-end="274" vertical-scroll-proportion="0.25263157">
-          <folding />
+        <state line="53" column="24" selection-start="1750" selection-end="1750" vertical-scroll-proportion="1.6736842">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
