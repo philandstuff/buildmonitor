@@ -53,8 +53,8 @@ public class BuildStatusMonitor {
     void reportNewStage(Stage stage) {
         visitedStages.add(stage.getStageLocator());
 
-        List<String> users = checkinUsersForThisStage(stage);
-        String user = users.get(0);
+        Set<String> users = checkinUsersForThisStage(stage);
+        String user = users.iterator().next();
 
         for (BuildMonitorListener listener : listeners) {
             if (isBroken(stage)) {
@@ -83,10 +83,9 @@ public class BuildStatusMonitor {
         return stage.getResult().equals("Failed");
     }
 
-    private List<String> checkinUsersForThisStage(Stage stage) {
-        Pipeline pipeline = stage.getPipeline();
-        List<String> users = new ArrayList<String>();
-        for (Material material : pipeline.materials()) {
+    private Set<String> checkinUsersForThisStage(Stage stage) {
+        Set<String> users = new HashSet<String>();
+        for (Material material : stage.getPipeline().materials()) {
             for (Material.Change change : material.getChanges()) {
                 users.add(change.getUser());
             }
