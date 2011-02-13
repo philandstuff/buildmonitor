@@ -16,15 +16,13 @@ public class BuildStatusMonitor {
     private boolean borked = false;
     private final PipelineReader pipelineReader;
 
-    public BuildStatusMonitor(String pipelineName, String stageName, String goServer) {
+    public BuildStatusMonitor(String pipelineName, String stageName, String goServer, BuildMonitorListener... listeners) {
         pipelineReader = new PipelineReader(pipelineName, stageName, goServer);
 
-        BlameMonitor blameMonitor = new BlameMonitor();
-        blameMonitor.createWindow();
-        listeners.add(blameMonitor);
-        listeners.add(new SongListener());
+        for (BuildMonitorListener listener : listeners) {
+            this.listeners.add(listener);
+        }
 
-        blameMonitor.createWindow();
     }
 
     public void pollForNewCompletion() {
@@ -69,8 +67,9 @@ public class BuildStatusMonitor {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        Thread.sleep(100);
-        BuildStatusMonitor monitor = new BuildStatusMonitor("all", "build", "twu-ci");
+        BlameMonitor blameMonitor = new BlameMonitor();
+        blameMonitor.createWindow();
+        BuildStatusMonitor monitor = new BuildStatusMonitor("all", "build", "twu-ci", blameMonitor, new SongListener());
         while (true) {
             try {
                 monitor.pollForNewCompletion();
