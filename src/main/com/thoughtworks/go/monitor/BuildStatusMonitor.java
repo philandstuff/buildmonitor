@@ -1,6 +1,14 @@
 package com.thoughtworks.go.monitor;
 
+import com.thoughtworks.go.TalkToGo;
+import com.thoughtworks.go.TalkToGo2Dot1;
+import com.thoughtworks.go.domain.FeedEntry;
+import com.thoughtworks.go.domain.Material;
+import com.thoughtworks.go.domain.Pipeline;
 import com.thoughtworks.go.domain.Stage;
+import com.thoughtworks.go.http.HttpClientWrapper;
+import com.thoughtworks.go.visitor.StageVisitor;
+import com.thoughtworks.go.visitor.criteria.MatchingStageVisitor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,16 +16,20 @@ import java.util.List;
 import java.util.Set;
 
 public class BuildStatusMonitor {
+    private final String pipelineName;
+    private final String stageName;
+    private final String GO_SERVER;
 
     Set<String> visitedStages = new HashSet<String>();
 
     List<BuildMonitorListener> listeners = new ArrayList<BuildMonitorListener>();
 
     private boolean borked = false;
-    private final PipelineReader pipelineReader;
 
     public BuildStatusMonitor(String pipelineName, String stageName, String goServer) {
-        pipelineReader = new PipelineReader(pipelineName, stageName, goServer);
+        this.pipelineName = pipelineName;
+        this.stageName = stageName;
+        this.GO_SERVER = goServer;
 
         BlameMonitor blameMonitor = new BlameMonitor();
         blameMonitor.createWindow();
@@ -28,7 +40,7 @@ public class BuildStatusMonitor {
     }
 
     public void pollForNewCompletion() {
-        Stage stage = pipelineReader.latestStage();
+        Stage stage = latestStage();
         if (stage != null && !alreadySeen(stage)) {
             System.out.println("Found new stage with result " + stage.getResult());
             reportNewStage(stage);
@@ -38,7 +50,7 @@ public class BuildStatusMonitor {
     void reportNewStage(Stage stage) {
         visitedStages.add(stage.getStageLocator());
 
-        Set<String> users = pipelineReader.checkinUsersForThisStage(stage);
+        Set<String> users = checkinUsersForThisStage(stage);
         String user = users.iterator().next();
 
         for (BuildMonitorListener listener : listeners) {
@@ -66,6 +78,52 @@ public class BuildStatusMonitor {
 
     private boolean isBroken(Stage stage) {
         return stage.getResult().equals("Failed");
+    }
+
+    private Set<String> checkinUsersForThisStage(Stage stage) {
+        Set<String> users = new HashSet<String>();
+        for (Material material : stage.getPipeline().materials()) {
+            for (Material.Change change : material.getChanges()) {
+                users.add(change.getUser());
+            }
+        }
+        return users;
+    }
+
+    private Stage latestStage() {
+        final List<Stage> stageListHack = new ArrayList<Stage>();
+        TalkToGo talkToGo = new TalkToGo2Dot1(pipelineName, new HttpClientWrapper(GO_SERVER, 8153), false);
+
+        talkToGo.visitStages(new StageVisitor() {
+            public void visitStage(Stage stage) {
+                if (!stage.getResult().equals("Cancelled")) {
+                    stageListHack.add(stage);
+                }
+            }
+
+            public void visitPipeline(Pipeline pipeline) {
+            }
+        }, new StopAfterFirstMatchCriteria(stageName));
+        return stageListHack.isEmpty() ? null : stageListHack.get(0);
+    }
+
+    private class StopAfterFirstMatchCriteria extends MatchingStageVisitor {
+
+        private boolean visitedOnce;
+
+        public StopAfterFirstMatchCriteria(String stageName) {
+            super(stageName);
+        }
+
+        @Override
+        public boolean shouldVisit(FeedEntry feedEntry) {
+            return visitedOnce = super.shouldVisit(feedEntry);
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return !visitedOnce;
+        }
     }
 
     public static void main(String[] args) throws InterruptedException {
