@@ -11,24 +11,23 @@ import java.awt.*;
  * To change this template use File | Settings | File Templates.
  */
 public class BlameMonitor implements BuildMonitorListener {
-    private JFrame frame;
+    public BlameMonitor() {
+    }
+
+    private JPanel panel;
     private JLabel userLabel;
     private JLabel statusLabel;
     private JLabel emailLabel;
 
-    public void createWindow() {
-        frame = new JFrame("BlameMonitor");
+    public JPanel createWindow() {
+        panel = new JPanel();
         userLabel = new JLabel("Blame Monitor");
         statusLabel = new JLabel("Blame Monitor");
         emailLabel = new JLabel("Blame Monitor");
-        frame.getContentPane().setLayout(new GridLayout(3,1));
-        frame.getContentPane().add(userLabel);
-        frame.getContentPane().add(emailLabel);
-        frame.getContentPane().add(statusLabel);
-
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH);
+        panel.setLayout(new GridLayout(3, 1));
+        panel.add(userLabel);
+        panel.add(emailLabel);
+        panel.add(statusLabel);
 
         userLabel.setFont(new Font("Dialog",Font.PLAIN, 100));
         userLabel.setOpaque(false);
@@ -36,27 +35,24 @@ public class BlameMonitor implements BuildMonitorListener {
         statusLabel.setOpaque(false);
         emailLabel.setFont(new Font("Dialog",Font.PLAIN, 100));
         emailLabel.setOpaque(false);
-        frame.setVisible(true);
-
+        panel.setVisible(true);
+        return panel;
     }
 
     public void brokeTheBuild(String user) {
-        Container container = frame.getContentPane();
-        container.setBackground(Color.RED);
+        panel.setBackground(Color.RED);
         showUser(user);
         statusLabel.setText("Broke the build");
     }
 
     public void fixedTheBuild(String user) {
-        Container container = frame.getContentPane();
-        container.setBackground(Color.GREEN);
+        panel.setBackground(Color.GREEN);
         showUser(user);
         statusLabel.setText("Fixed the build");
     }
 
     public void pushedWorkingBuild(String user) {
-        Container container = frame.getContentPane();
-        container.setBackground(Color.GREEN);
+        panel.setBackground(Color.GREEN);
         showUser(user);
         statusLabel.setText("Pushed");
     }
