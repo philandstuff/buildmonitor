@@ -24,9 +24,6 @@ public class BuildStatusMonitor {
 
     List<BuildMonitorListener> listeners = new ArrayList<BuildMonitorListener>();
 
-    private BlameMonitor blameMonitor = new BlameMonitor();
-    private SongListener songListener = new SongListener();
-
     private boolean borked = false;
 
     public BuildStatusMonitor(String pipelineName, String stageName, String goServer) {
