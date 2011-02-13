@@ -23,15 +23,15 @@ public class SongListener implements BuildMonitorListener {
         }
     }
 
-    public void brokeTheBuild(String user) {
+    public void brokeTheBuild(String user, String info) {
         playSong(BROKEN_SONG);
     }
 
-    public void fixedTheBuild(String user) {
+    public void fixedTheBuild(String user, String info) {
         playSong(FIXED_SONG);
     }
 
-    public void pushedWorkingBuild(String user) {
+    public void pushedWorkingBuild(String user, String info) {
         playSong(PASSED_SONG);
     }
 }
